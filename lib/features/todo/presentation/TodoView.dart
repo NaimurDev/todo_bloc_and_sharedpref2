@@ -1,3 +1,4 @@
+import 'package:todo_list_app/features/todo/domain/model/Todo.dart';
 import 'package:todo_list_app/features/todo/presentation/bloc/TodoCubit.dart';
 import 'package:todo_list_app/features/todo/presentation/bloc/TodoState.dart';
 import 'package:flutter/material.dart';
@@ -13,7 +14,8 @@ class TodoView extends StatefulWidget {
 }
 
 class _TodoViewState extends State<TodoView> {
-  var tfTodo = TextEditingController();
+  final GlobalKey<AnimatedListState> _listKey = GlobalKey<AnimatedListState>();
+
   @override
   void initState() {
     super.initState();
@@ -26,8 +28,7 @@ class _TodoViewState extends State<TodoView> {
       appBar: AppBar(
         title: const Text('ToDos'),
       ),
-      body: BlocConsumer<TodoCubit, TodoState>(
-        listener: (context, state) {},
+      body: BlocBuilder<TodoCubit, TodoState>(
         builder: (context, state) {
           if (state is TodoInitial) {
             return initialView();
@@ -46,7 +47,9 @@ class _TodoViewState extends State<TodoView> {
     );
   }
 
-  FloatingActionButton addButton(BuildContext context) {
+  FloatingActionButton addButton(
+    BuildContext context,
+  ) {
     return FloatingActionButton(
       child: const Icon(Icons.add),
       onPressed: () {
@@ -57,8 +60,13 @@ class _TodoViewState extends State<TodoView> {
             return Padding(
               padding: MediaQuery.of(_context).viewInsets,
               child: AddTodoBottomSheet(
-                onAdd: (title, description) {
-                  BlocProvider.of<TodoCubit>(context).add(title, description);
+                onAdd: (title, description) async{
+                  final todoCubit = BlocProvider.of<TodoCubit>(context);
+                  await todoCubit.add(title, description);
+                  if (todoCubit.state is TodoLoaded) {
+                    _listKey.currentState?.insertItem(
+                        (todoCubit.state as TodoLoaded).todo.length - 1);
+                  }
                 },
               ),
             );
@@ -81,11 +89,30 @@ class _TodoViewState extends State<TodoView> {
   }
 
   Widget loadedView(TodoLoaded state) {
-    return ListView.builder(
-      itemCount: state.todo.length,
-      itemBuilder: (BuildContext context, int index) {
-        return TaskView(index: index, todo: state.todo[index]);
-      },
+    return AnimatedList(
+        key: _listKey,
+        initialItemCount: state.todo.length,
+        itemBuilder: (context, index, animation) {
+          final item = state.todo[index];
+          return _buildItem(item, index, animation);
+        });
+  }
+
+  Widget _buildItem(Todo item, int index, Animation<double> animation) {
+    return SizeTransition(
+      sizeFactor: animation,
+      child: TaskView(
+          index: index,
+          todo: item,
+          onDelete: () async {
+            await BlocProvider.of<TodoCubit>(context).delete(index);
+            _listKey.currentState?.removeItem(
+              index,
+              (context, animation) {
+                return _buildItem(item, index, animation); // Animate removal
+              },
+            );
+          }),
     );
   }
 }

@@ -6,7 +6,8 @@ import 'package:todo_list_app/features/todo/presentation/bloc/TodoCubit.dart';
 class TaskView extends StatelessWidget {
   final int index;
   final Todo todo;
-  const TaskView({super.key, required this.index, required this.todo});
+  final VoidCallback onDelete; 
+  const TaskView({super.key, required this.index, required this.todo, required this.onDelete});
 
   @override
   Widget build(BuildContext context) {
@@ -36,9 +37,7 @@ class TaskView extends StatelessWidget {
           Icons.delete,
         ),
         color: Colors.red,
-        onPressed: () {
-          BlocProvider.of<TodoCubit>(context).delete(index);
-        },
+        onPressed: onDelete,
       ),
     );
   }
