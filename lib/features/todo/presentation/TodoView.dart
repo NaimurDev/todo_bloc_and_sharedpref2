@@ -3,6 +3,7 @@ import 'package:todo_list_app/features/todo/presentation/bloc/TodoState.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:todo_list_app/features/todo/presentation/widget/AddTodoBottomSheet.dart';
+import 'package:todo_list_app/features/todo/presentation/widget/TaskView.dart';
 
 class TodoView extends StatefulWidget {
   const TodoView({super.key});
@@ -57,8 +58,6 @@ class _TodoViewState extends State<TodoView> {
               padding: MediaQuery.of(_context).viewInsets,
               child: AddTodoBottomSheet(
                 onAdd: (title, description) {
-                print("app: on add");
-
                   BlocProvider.of<TodoCubit>(context).add(title, description);
                 },
               ),
@@ -85,18 +84,7 @@ class _TodoViewState extends State<TodoView> {
     return ListView.builder(
       itemCount: state.todo.length,
       itemBuilder: (BuildContext context, int index) {
-        return ListTile(
-          title: Text(state.todo[index].title),
-          trailing: IconButton(
-            icon: const Icon(
-              Icons.delete,
-            ),
-            color: Colors.red,
-            onPressed: () {
-              BlocProvider.of<TodoCubit>(context).delete(index);
-            },
-          ),
-        );
+        return TaskView(index: index, todo: state.todo[index]);
       },
     );
   }

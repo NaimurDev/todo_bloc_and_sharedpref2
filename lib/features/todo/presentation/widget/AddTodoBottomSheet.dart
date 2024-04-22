@@ -39,7 +39,6 @@ class AddTodoBottomSheet extends StatelessWidget {
           const SizedBox(height: 10),
           ElevatedButton(
             onPressed: () {
-              print("app: pressed add");
               String title = titleController.text.trim();
               String description = descriptionController.text.trim();
 
@@ -48,8 +47,6 @@ class AddTodoBottomSheet extends StatelessWidget {
                     description); // Call the callback function with the title and description
                 Navigator.pop(context); // Close the bottom sheet
               } else {
-                print("app: error empty");
-
                 Fluttertoast.showToast(
                     msg: "Title and Description cannot be empty.",
                     toastLength: Toast.LENGTH_SHORT,
