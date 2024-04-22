@@ -6,11 +6,12 @@ import 'package:todo_list_app/features/todo/domain/repository/ITodoRepository.da
 import 'package:todo_list_app/features/todo/presentation/bloc/TodoCubit.dart';
 import 'package:todo_list_app/features/todo/presentation/TodoView.dart';
 
-void main() async{
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await initDI();
   runApp(const TodoApp());
 }
+
 class TodoApp extends StatelessWidget {
   const TodoApp({super.key});
 

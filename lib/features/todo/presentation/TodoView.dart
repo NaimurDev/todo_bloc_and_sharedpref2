@@ -31,25 +31,21 @@ class _TodoViewState extends State<TodoView> {
       body: BlocBuilder<TodoCubit, TodoState>(
         builder: (context, state) {
           if (state is TodoInitial) {
-            return initialView();
-          }
-          if (state is TodoLoading) {
-            return const CircularProgressIndicator();
-          }
-          if (state is TodoLoaded) {
-            return loadedView(state);
+            return _initialView();
+          } else if (state is TodoLoading) {
+            return const Center(child: CircularProgressIndicator());
+          } else if (state is TodoLoaded) {
+            return _loadedView(state);
           } else {
-            return errorView();
+            return _errorView();
           }
         },
       ),
-      floatingActionButton: addButton(context),
+      floatingActionButton: _addButton(context),
     );
   }
 
-  FloatingActionButton addButton(
-    BuildContext context,
-  ) {
+  FloatingActionButton _addButton(BuildContext context) {
     return FloatingActionButton(
       child: const Icon(Icons.add),
       onPressed: () {
@@ -60,12 +56,13 @@ class _TodoViewState extends State<TodoView> {
             return Padding(
               padding: MediaQuery.of(_context).viewInsets,
               child: AddTodoBottomSheet(
-                onAdd: (title, description) async{
+                onAdd: (title, description) async {
                   final todoCubit = BlocProvider.of<TodoCubit>(context);
                   await todoCubit.add(title, description);
                   if (todoCubit.state is TodoLoaded) {
                     _listKey.currentState?.insertItem(
-                        (todoCubit.state as TodoLoaded).todo.length - 1);
+                      (todoCubit.state as TodoLoaded).todo.length - 1,
+                    );
                   }
                 },
               ),
@@ -76,43 +73,57 @@ class _TodoViewState extends State<TodoView> {
     );
   }
 
-  Center initialView() {
-    return const Center(
-      child: Text("inital"),
-    );
+  Center _initialView() {
+    return const Center(child: Text("Initial"));
   }
 
-  Center errorView() {
-    return const Center(
-      child: Text("ERROR"),
-    );
+  Center _errorView() {
+    return const Center(child: Text("Error"));
   }
 
-  Widget loadedView(TodoLoaded state) {
+  Widget _loadedView(TodoLoaded state) {
     return AnimatedList(
-        key: _listKey,
-        initialItemCount: state.todo.length,
-        itemBuilder: (context, index, animation) {
-          final item = state.todo[index];
-          return _buildItem(item, index, animation);
-        });
+      key: _listKey,
+      initialItemCount: state.todo.length,
+      itemBuilder: (context, index, animation) {
+        final item = state.todo[index];
+        return _buildItem(item, index, animation);
+      },
+    );
   }
 
   Widget _buildItem(Todo item, int index, Animation<double> animation) {
     return SizeTransition(
       sizeFactor: animation,
       child: TaskView(
-          index: index,
-          todo: item,
-          onDelete: () async {
-            await BlocProvider.of<TodoCubit>(context).delete(index);
-            _listKey.currentState?.removeItem(
-              index,
-              (context, animation) {
-                return _buildItem(item, index, animation); // Animate removal
-              },
-            );
-          }),
+        index: index,
+        todo: item,
+        onDelete: () async {
+          await BlocProvider.of<TodoCubit>(context).delete(index);
+          _listKey.currentState?.removeItem(
+            index,
+            (context, animation) {
+              return SizeTransition(
+                sizeFactor: animation,
+                child: TaskView(
+                  index: index,
+                  todo: item,
+                  onDelete: () async {
+                    await BlocProvider.of<TodoCubit>(context).delete(index);
+                    _listKey.currentState?.removeItem(
+                      index,
+                      (context, animation) {
+                        return _buildItem(
+                            item, index, animation); // Animate removal
+                      },
+                    );
+                  },
+                ),
+              );
+            },
+          );
+        },
+      ),
     );
   }
 }

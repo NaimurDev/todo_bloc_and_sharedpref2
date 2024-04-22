@@ -11,7 +11,7 @@ class TodoCubit extends Cubit<TodoState> {
 
   Future<void> initial() async {
     try {
-      emit(TodoLoading());
+      emit(const TodoLoading());
       final todoList = await _todoRepository.initialSetFunc();
       emit(TodoLoaded(todoList));
     } catch (e) {
@@ -21,7 +21,7 @@ class TodoCubit extends Cubit<TodoState> {
 
   Future<void> add(String todoTitle, todoDescription) async {
     try {
-      emit(TodoLoading());
+      emit(const TodoLoading());
       await _todoRepository.addTodo(todoTitle, todoDescription);
       final todoList = await _todoRepository.initialSetFunc();
       emit(TodoLoaded(todoList));
@@ -32,7 +32,7 @@ class TodoCubit extends Cubit<TodoState> {
 
   Future<void> delete(int i) async {
     try {
-      emit(TodoLoading());
+      emit(const TodoLoading());
       await _todoRepository.deleteTodo(i);
       final todoList = await _todoRepository.initialSetFunc();
       emit(TodoLoaded(todoList));
