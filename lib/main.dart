@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:todo_list_app/todo/TodoCubit.dart';
-import 'package:todo_list_app/todo/TodoRepository.dart';
-import 'package:todo_list_app/todo/TodoView.dart';
+import 'package:todo_list_app/core/utils/constants.dart';
+import 'package:todo_list_app/features/todo/presentation/bloc/TodoCubit.dart';
+import 'package:todo_list_app/features/todo/data/TodoRepository.dart';
+import 'package:todo_list_app/features/todo/presentation/TodoView.dart';
 
 void main() {
   runApp(const MyApp());
@@ -13,7 +14,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'ToDo App',
+      title: AppConst.appName,
       debugShowCheckedModeBanner: false,
       home: BlocProvider(
         create: (context) => TodoCubit(TodoRepository()),

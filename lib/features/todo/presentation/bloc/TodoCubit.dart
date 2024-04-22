@@ -1,6 +1,6 @@
 import 'package:bloc/bloc.dart';
-import 'package:todo_list_app/todo/TodoRepository.dart';
-import 'package:todo_list_app/todo/TodoState.dart';
+import 'package:todo_list_app/features/todo/data/TodoRepository.dart';
+import 'package:todo_list_app/features/todo/presentation/bloc/TodoState.dart';
 
 class TodoCubit extends Cubit<TodoState> {
   // ignore: unused_field
@@ -18,10 +18,10 @@ class TodoCubit extends Cubit<TodoState> {
     }
   }
 
-  Future<void> add(String todo) async {
+  Future<void> add(String todoTitle, todoDescription) async {
     try {
       emit(TodoLoading());
-      await _todoRepository.addTodo(todo);
+      await _todoRepository.addTodo(todoTitle, todoDescription);
       final todoList = await _todoRepository.initalSetFunc();
       emit(TodoLoaded(todoList));
     } catch (e) {

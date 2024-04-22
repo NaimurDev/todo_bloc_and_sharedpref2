@@ -1,4 +1,4 @@
-import 'package:todo_list_app/todo/Todo.dart';
+import 'package:todo_list_app/features/todo/domain/Todo.dart';
 
 abstract class TodoState {
   const TodoState();
