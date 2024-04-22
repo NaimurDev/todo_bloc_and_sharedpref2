@@ -1,10 +1,11 @@
 import 'package:bloc/bloc.dart';
 import 'package:todo_list_app/features/todo/data/TodoRepository.dart';
+import 'package:todo_list_app/features/todo/domain/repository/ITodoRepository.dart';
 import 'package:todo_list_app/features/todo/presentation/bloc/TodoState.dart';
 
 class TodoCubit extends Cubit<TodoState> {
   // ignore: unused_field
-  final TodoRepository _todoRepository;
+  final ITodoRepository _todoRepository;
 
   TodoCubit(this._todoRepository) : super(TodoInitial());
 
