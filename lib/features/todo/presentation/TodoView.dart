@@ -6,14 +6,23 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:todo_list_app/features/todo/presentation/widget/AddTodoBottomSheet.dart';
 import 'package:todo_list_app/features/todo/presentation/widget/TaskView.dart';
 
-class TodoView extends StatefulWidget {
+class TodoView extends StatelessWidget {
   const TodoView({super.key});
 
   @override
-  _TodoViewState createState() => _TodoViewState();
+  Widget build(BuildContext context) {
+    return const TodoViewBody();
+  }
 }
 
-class _TodoViewState extends State<TodoView> {
+class TodoViewBody extends StatefulWidget {
+  const TodoViewBody({super.key});
+
+  @override
+  _TodoViewBodyState createState() => _TodoViewBodyState();
+}
+
+class _TodoViewBodyState extends State<TodoViewBody> {
   final GlobalKey<AnimatedListState> _listKey = GlobalKey<AnimatedListState>();
 
   @override
@@ -52,19 +61,22 @@ class _TodoViewState extends State<TodoView> {
         showModalBottomSheet(
           context: context,
           isScrollControlled: true,
-          builder: (_context) {
-            return Padding(
-              padding: MediaQuery.of(_context).viewInsets,
-              child: AddTodoBottomSheet(
-                onAdd: (title, description) async {
-                  final todoCubit = BlocProvider.of<TodoCubit>(context);
-                  await todoCubit.add(title, description);
-                  if (todoCubit.state is TodoLoaded) {
-                    _listKey.currentState?.insertItem(
-                      (todoCubit.state as TodoLoaded).todo.length - 1,
-                    );
-                  }
-                },
+          builder: (dialogContext) {
+            return BlocProvider.value(
+              value: BlocProvider.of<TodoCubit>(context),
+              child: Padding(
+                padding: MediaQuery.of(dialogContext).viewInsets,
+                child: AddTodoBottomSheet(
+                  onAdd: (title, description) async {
+                    final todoCubit = BlocProvider.of<TodoCubit>(context);
+                    await todoCubit.add(title, description);
+                    if (todoCubit.state is TodoLoaded) {
+                      _listKey.currentState?.insertItem(
+                        (todoCubit.state as TodoLoaded).todo.length - 1,
+                      );
+                    }
+                  },
+                ),
               ),
             );
           },
