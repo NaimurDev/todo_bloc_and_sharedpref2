@@ -68,7 +68,7 @@ class _TodoViewBodyState extends State<TodoViewBody> {
                 padding: MediaQuery.of(dialogContext).viewInsets,
                 child: AddTodoBottomSheet(
                   onAdd: (title, description) async {
-                    final todoCubit = BlocProvider.of<TodoCubit>(context);
+                    final todoCubit = BlocProvider.of<TodoCubit>(context, listen: false);
                     await todoCubit.add(title, description);
                     if (todoCubit.state is TodoLoaded) {
                       _listKey.currentState?.insertItem(
